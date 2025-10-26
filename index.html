@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VisionOps - Interactive Image Processing</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f2f2f2; text-align: center; padding: 20px; }
+        h1 { color: #333; }
+        .container { display: flex; justify-content: center; gap: 40px; margin-top: 20px; }
+        .image-box { border: 1px solid #ccc; padding: 10px; background: #fff; }
+        img { max-width: 300px; max-height: 300px; }
+        .controls { margin-top: 20px; }
+        .slider-container { margin: 10px 0; }
+        input[type=range] { width: 200px; }
+        label { margin-right: 10px; font-weight: bold; }
+        select, input[type=submit] { padding: 5px 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>VisionOps - Interactive Image Processing</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" required><br><br>
+
+        <label for="operation">Select Operation:</label>
+        <select name="operation" id="operation" onchange="updateControls()">
+            <option value="Negative">Negative</option>
+            <option value="Gamma">Gamma Correction</option>
+            <option value="Log">Log Transformation</option>
+            <option value="Threshold">Threshold</option>
+            <option value="Mean">Mean Filter</option>
+            <option value="Median">Median Filter</option>
+            <option value="Gaussian">Gaussian Filter</option>
+            <option value="Sobel">Sobel Filter</option>
+        </select>
+
+        <div class="controls">
+            <div class="slider-container" id="gamma-container" style="display:none;">
+                <label for="param">Gamma:</label>
+                <input type="range" name="param" id="gamma" min="0.1" max="5" step="0.1" value="1.0">
+                <span id="gamma-val">1.0</span>
+            </div>
+
+            <div class="slider-container" id="threshold-container" style="display:none;">
+                <label for="param">Threshold:</label>
+                <input type="range" name="param" id="threshold" min="0" max="255" step="1" value="128">
+                <span id="threshold-val">128</span>
+            </div>
+
+            <div class="slider-container" id="kernel-container" style="display:none;">
+                <label for="param">Kernel Size:</label>
+                <input type="range" name="param" id="kernel" min="3" max="9" step="2" value="3">
+                <span id="kernel-val">3</span>
+            </div>
+        </div>
+
+        <input type="submit" value="Process Image">
+    </form>
+
+    <div class="container">
+        {% if original_file %}
+        <div class="image-box">
+            <h3>Original Image</h3>
+            <img src="{{ original_file }}" alt="Original Image">
+        </div>
+        {% endif %}
+        {% if processed_file %}
+        <div class="image-box">
+            <h3>Processed Image</h3>
+            <img src="{{ processed_file }}" alt="Processed Image">
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const operationSelect = document.getElementById("operation");
+        const gammaContainer = document.getElementById("gamma-container");
+        const thresholdContainer = document.getElementById("threshold-container");
+        const kernelContainer = document.getElementById("kernel-container");
+
+        const gammaSlider = document.getElementById("gamma");
+        const gammaVal = document.getElementById("gamma-val");
+        gammaSlider.oninput = () => gammaVal.innerText = gammaSlider.value;
+
+        const thresholdSlider = document.getElementById("threshold");
+        const thresholdVal = document.getElementById("threshold-val");
+        thresholdSlider.oninput = () => thresholdVal.innerText = thresholdSlider.value;
+
+        const kernelSlider = document.getElementById("kernel");
+        const kernelVal = document.getElementById("kernel-val");
+        kernelSlider.oninput = () => kernelVal.innerText = kernelSlider.value;
+
+        function updateControls() {
+            const op = operationSelect.value;
+            gammaContainer.style.display = (op === "Gamma") ? "block" : "none";
+            thresholdContainer.style.display = (op === "Threshold") ? "block" : "none";
+            kernelContainer.style.display = (op === "Mean" || op === "Median" || op === "Gaussian") ? "block" : "none";
+        }
+
+        // Initialize controls
+        updateControls();
+    </script>
+</body>
+</html>
